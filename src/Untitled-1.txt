@@ -1,0 +1,186 @@
+import React, { Component } from 'react';
+import logo from './logo.svg';
+import './App.css';
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.timer = 0;
+    this.startTimer = this.startTimer.bind(this);
+    this.countDown = this.countDown.bind(this);
+    this.state = { random: Math.floor((Math.random() * 10)+ 1) , a:1, reset:0,time: {}, seconds:  11};
+  }
+  secondsToTime(secs){
+    let hours = Math.floor(secs / (60 * 60));
+    let divisor_for_minutes = secs % (60 * 60);
+    let minutes = Math.floor(divisor_for_minutes / 60);
+    let divisor_for_seconds = divisor_for_minutes % 60;
+    let seconds = Math.ceil(divisor_for_seconds);
+    let obj = {
+      "h": hours,
+      "m": minutes,
+      "s": seconds
+    };
+    return obj;
+  }
+
+  componentDidMount() {
+    let timeLeftVar = this.secondsToTime(this.state.seconds);
+    
+    this.setState({ time: timeLeftVar });
+    
+  }
+
+  startTimer() {
+    if (this.timer == 0) {
+      this.timer = setInterval(this.countDown, 1000); 
+    }
+  }
+
+  countDown() {
+    // Remove one second, set state so a re-render happens.
+    let seconds = this.state.seconds - 1;
+    this.setState({
+      time: this.secondsToTime(seconds),
+      seconds: seconds,
+    });
+    document.getElementById("progressBar").value = 10 - --seconds;
+    
+    // Check if we're at zero.
+    if (seconds == -1) { 
+      clearInterval(this.timer);
+        alert("you lose");
+    }
+  }
+
+  printStar = () =>{
+    let stars = [];
+    for (let i = 0; i < this.state.random; i++) {
+
+      stars.push(<span className="fa fa-star" key={i}></span>);
+      
+    }
+    return stars;
+   }
+
+   handleClick = () => {
+
+    let sum = 0;
+    let b;
+    let c;
+    let style;
+  
+    for (let i = 1; i < this.state.a; i++) {
+      if (document.getElementById(i) && document.getElementById(i).value ) {
+      b = parseInt(document.getElementById(i).value);
+      sum = sum + b;
+     
+        for (let j = 11; j <= 20; j++) {
+          c=parseInt(document.getElementById(j).value);
+          if (c == b) {
+            document.getElementById(j).disabled = true;
+            let style = document.getElementById(j);
+            style.classList.add("disabled");
+          }
+          
+        }
+      } 
+    }
+     
+    if (sum == this.state.random) {
+      const rand = Math.floor((Math.random() * 10)+ 1);
+      this.setState({ random:  rand });
+      let element;
+      for (let k = 1; k < this.state.a; k++) {
+        if (document.getElementById(k) && document.getElementById(k).value ) {
+         element = document.getElementById(k); // notice the change
+        element.parentNode.removeChild(element);
+      }}
+      clearInterval(this.timer);
+      this.timer = 0;
+      this.state.seconds = 11;
+      this.componentDidMount();
+      this.startTimer();
+    }
+    else{
+      alert("you lose");
+    } 
+  }
+
+  createBtn=(e) =>{
+    let x= e.target.value;
+    var node = document.createElement("input");
+    node.type = "button";
+    node.className = "btn-nums";
+    node.value = x;
+    // var textnode = document.createTextNode(x);
+    node.setAttribute("id",this.state.a);
+    document.getElementById("right-contain").appendChild(node);
+    this.setState({ a:  this.state.a+1 });
+    return 0;
+  }
+
+  reset= () => {
+    clearInterval(this.timer);
+    this.timer = 0;
+    this.state.seconds = 11;
+    this.componentDidMount();
+    this.startTimer();
+    if(this.state.reset == 5){
+      alert("you lose");
+    }
+    const rands = Math.floor((Math.random() * 10)+ 1);
+    this.setState({ random:  rands });
+    let element;
+    for (let k = 1; k < this.state.a; k++) {
+      if (document.getElementById(k) && document.getElementById(k).value ) {
+       element = document.getElementById(k); // notice the change
+      element.parentNode.removeChild(element);
+    }}
+    this.setState({ reset:  this.state.reset+1 });
+  }
+  printNum(){
+    const number = 10;
+  }
+
+
+
+  render() {
+    return (
+      <div className = "total-contain">
+      <div className = "container">
+      <div className = "contain" id= "contain">
+       
+       <div className = "star">{this.printStar()}</div>
+
+      
+      </div>
+      <button className="equal" onClick={this.handleClick}> = </button>
+      <button className="reset" onClick={this.reset}> reset </button>
+      <div id  = "right-contain" className = "right-contain"></div>
+      </div>
+      <div>
+      {this.startTimer()}
+      
+      </div>
+      <div>Your time:</div>
+      <progress value="0" max="10" id="progressBar"></progress>
+      <div className = "btn-cover">
+      <div className = "btn-num" ><input type= "button" id = "11" value="1" onClick={this.createBtn()}/></div>
+      <div className = "btn-num"><input type= "button" id = "12" value="2" onClick={this.createBtn()}/></div>
+      <div className = "btn-num"><input type= "button" id = "13" value="3" onClick={this.createBtn()}/></div>
+      <div className = "btn-num"><input type= "button" id = "14" value="4" onClick={this.createBtn()}/></div>
+      <div className = "btn-num"><input type= "button" id = "15" value="5" onClick={this.createBtn()}/></div>
+      <div className = "btn-num"><input type= "button" id = "16" value="6" onClick={this.createBtn()}/></div>
+      <div className = "btn-num"><input type= "button" id = "17" value="7" onClick={this.createBtn()}/></div>
+      <div className = "btn-num"><input type= "button" id = "18" value="8" onClick={this.createBtn()}/></div>
+      <div className = "btn-num"><input type= "button" id = "19" value="9" onClick={this.createBtn()}/></div>
+      <div className = "btn-num"><input type= "button" id = "20" value="10" onClick={this.createBtn()}/></div>
+     
+      </div>
+      </div>
+      );
+  }
+}
+
+export default App;

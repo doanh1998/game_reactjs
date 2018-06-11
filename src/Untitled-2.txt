@@ -1,0 +1,196 @@
+import React, { Component } from 'react';
+import logo from './logo.svg';
+import './App.css';
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.timer = 0;
+    this.startTimer = this.startTimer.bind(this);
+    this.countDown = this.countDown.bind(this);
+    this.state = { random: Math.floor((Math.random() * 10)+ 1) , a:1, reset:0,time: {},btnArr:[], seconds:  11};
+  }
+  secondsToTime(secs){
+    let hours = Math.floor(secs / (60 * 60));
+    let divisor_for_minutes = secs % (60 * 60);
+    let minutes = Math.floor(divisor_for_minutes / 60);
+    let divisor_for_seconds = divisor_for_minutes % 60;
+    let seconds = Math.ceil(divisor_for_seconds);
+    let obj = {
+      "h": hours,
+      "m": minutes,
+      "s": seconds
+    };
+    return obj;
+  }
+
+  componentDidMount() {
+    let timeLeftVar = this.secondsToTime(this.state.seconds);
+    this.setState({ time: timeLeftVar });
+  }
+
+  startTimer() {
+    if (this.timer == 0) {
+      this.timer = setInterval(this.countDown, 1000); 
+    }
+  }
+
+  countDown() {
+    // Remove one second, set state so a re-render happens.
+    let seconds = this.state.seconds - 1;
+    this.setState({
+      time: this.secondsToTime(seconds),
+      seconds: seconds,
+    });
+    document.getElementById("progressBar").value = 10 - --seconds;
+    // Check if we're at zero.
+    if (seconds == -1) { 
+      clearInterval(this.timer);
+        alert("you lose");
+    }
+  }
+
+  printStar = () =>{
+    let stars = [];
+    for (let i = 0; i < this.state.random; i++) {
+      stars.push(<span className="fa fa-star" key={i}></span>);
+    }
+    return stars;
+   }
+   closeArray() {
+    this.setState({
+        btnArr: []
+    })
+  }
+   handleClick = () => {
+    let ind;
+    let sum = 0;
+    let b;
+    let c;
+    let style;
+    this.state.btnArr.map((number,index) =>
+    {
+      b = parseInt(number);
+      sum = sum + b;
+    }
+   );
+   console.log(sum);
+  //  console.log(this.state.btnArr.indexOf(""));
+    if (sum == this.state.random) {
+      const rand = Math.floor((Math.random() * 10)+ 1);
+      this.setState({ random:  rand });
+      const number = [1,2,3,4,5,6,7,8,9,10];
+      number.map((number,index) =>
+      {
+       
+        ind =  this.state.btnArr.indexOf(number);
+        console.log(this.state.btnArr.indexOf(number));
+        
+        if(ind != -1){
+          
+          document.getElementById(number).disabled = true;
+        }
+
+      }
+    );
+      this.closeArray();
+      clearInterval(this.timer);
+      this.timer = 0;
+      this.state.seconds = 11;
+      this.componentDidMount();
+      this.startTimer();
+    }
+    else{
+      alert("you lose");
+    } 
+  }
+
+  createBtn=(e) =>{
+    let x= parseInt(e.target.value);
+
+      this.state.btnArr.push(x)
+      this.setState(
+        this.state
+      )
+      this.state
+      console.log(this.state.btnArr)
+  }
+  choseBtn(){
+    const listButtons = this.state.btnArr.map((number,index) =>
+      <div className = "btn-num" ><input type= "button" id={number} value={number} onClick={(e) => this.remove(e)}/></div>
+);
+    return (
+      <div id  = "right-contain" className = "right-contain">
+        {listButtons}
+      </div>
+    );
+  }
+
+  remove=(e)=>{
+    let index = this.state.btnArr.indexOf(e.target.value)
+    this.state.btnArr.splice(index, 1);
+    this.setState(
+      this.state
+    )
+    this.state
+    console.log(this.state.btnArr)
+  }
+
+  reset= () => {
+    clearInterval(this.timer);
+    this.timer = 0;
+    this.state.seconds = 11;
+    this.componentDidMount();
+    this.startTimer();
+    if(this.state.reset == 5){
+      alert("you lose");
+    }
+    const rands = Math.floor((Math.random() * 10)+ 1);
+    this.setState({ random:  rands });
+    let element;
+    for (let k = 1; k < this.state.a; k++) {
+      if (document.getElementById(k) && document.getElementById(k).value ) {
+       element = document.getElementById(k); // notice the change
+       element.parentNode.removeChild(element);
+    }}
+    this.setState({ reset:  this.state.reset+1 });
+  }
+    printNum(){
+      const number = [1,2,3,4,5,6,7,8,9,10];
+      const listButtons = number.map((number,index) =>
+        <div className = "btn-num" ><input type= "button" value={number}  id={number} onClick={(e) => this.createBtn(e)}/></div>
+);
+      return (
+        <div>
+          {listButtons}
+        </div>
+      );
+    }
+  render() {
+    return (
+      <div className = "total-contain">
+      <div className = "container">
+      <div className = "contain" id= "contain">
+       
+       <div className = "star">{this.printStar()}</div>
+
+      </div>
+      <button className="equal" onClick={this.handleClick}> = </button>
+      <button className="reset" onClick={this.reset}> reset </button>
+      {this.choseBtn()}
+      </div>
+      <div>
+      {this.startTimer()}
+      
+      </div>
+      <div>Your time:</div>
+      <progress value="0" max="10" id="progressBar"></progress>
+      <div className = "btn-cover">
+      <div className = "star">{this.printNum()}</div>
+      </div>
+      </div>
+      );
+  }
+}
+
+export default App;
